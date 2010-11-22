@@ -98,6 +98,7 @@ int deny_severity=LOG_WARNING;
 int rfbMaxClientWait = 20000;   /* time (ms) after which we decide client has
                                    gone away - needed to stop us hanging */
 
+    int buffSize = 16384;
 /*
  * rfbInitSockets sets up the TCP and UDP sockets to listen for RFB
  * connections.  It does nothing if called again.
@@ -426,6 +427,9 @@ rfbConnect(rfbScreenInfoPtr rfbScreen,
     }
 #endif
 
+   int ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &buffSize, sizeof(buffSize));
+      printf("SEND BUFFER SET %d\n",ret);
+
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY,
 		   (char *)&one, sizeof(one)) < 0) {
 	rfbLogPerror("setsockopt failed");
@@ -629,6 +633,8 @@ rfbListenOnTCPPort(int port,
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 	return -1;
     }
+    int ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &buffSize, sizeof(buffSize));
+    printf("SEND BUFFER SET %d\n",ret);
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
 		   (char *)&one, sizeof(one)) < 0) {
 	closesocket(sock);
@@ -695,6 +701,11 @@ rfbListenOnUDPPort(int port,
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 	return -1;
     }
+   
+   int ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &buffSize, sizeof(buffSize));
+   printf("SEND BUFFER SET %d\n",ret);
+
+
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
 		   (char *)&one, sizeof(one)) < 0) {
 	return -1;

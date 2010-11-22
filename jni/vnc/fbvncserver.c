@@ -779,16 +779,16 @@ int main(int argc, char **argv)
     while (1)
     {
         while (vncscr->clientHead == NULL)
-            rfbProcessEvents(vncscr, 100000);
+            rfbProcessEvents(vncscr, 1);
 	
         rfbMarkRectAsModified(vncscr, 0, 0, vncscr->width, vncscr->height);
         
 	if (standby>60)
-	  rfbProcessEvents(vncscr, 200000);
+	  rfbProcessEvents(vncscr, 2000);
 	else if (standby>30)
-	  rfbProcessEvents(vncscr, 100000);
+	  rfbProcessEvents(vncscr, 1000);
 	else
-	  rfbProcessEvents(vncscr, 10000);
+	  rfbProcessEvents(vncscr, 100);
         
         update_screen();
     }

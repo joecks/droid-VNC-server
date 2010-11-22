@@ -22,7 +22,7 @@ void FUNCTION(void)
   
   int max_x=-1,max_y=-1, min_x=9999, min_y=9999;
   idle=1;
-  
+#if 0  
   if (rotation==0)
   {
    //memcpy(vncbuf,fbmmap,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
@@ -135,7 +135,13 @@ void FUNCTION(void)
 }
   
 memcpy(vncbuf,a,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
+#else  
 
+memcpy(vncbuf,b,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
+max_x = scrinfo.xres - 1;
+max_y = scrinfo.yres - 1;
+idle=0;
+#endif
   
 
   if (min_x!=9999 && min_y!=9999 && max_x!=-1 && max_y!=-1)
@@ -147,7 +153,7 @@ memcpy(vncbuf,a,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
      
   rfbMarkRectAsModified(vncscr, min_x, min_y, max_x, max_y);
   rfbProcessEvents(vncscr, 10000);
-  } 
+  }  
   
 //     rfbMarkRectAsModified(vncscr, 0, 0, scrinfo.yres,scrinfo.xres);
 //       rfbProcessEvents(vncscr, 10000);
@@ -158,9 +164,9 @@ memcpy(vncbuf,a,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
     standby=standby+1;
     
     if (standby>30)
-      rfbProcessEvents(vncscr, 1000000);
+      rfbProcessEvents(vncscr, 10000);
     else
-      rfbProcessEvents(vncscr, 100000);
+      rfbProcessEvents(vncscr, 1000);
    
 //       __android_log_print(ANDROID_LOG_INFO,"VNC","standby %d xoff=%d yoff=%d\n",standby,scrinfo.xoffset,scrinfo.yoffset);
     change=0;
@@ -169,7 +175,7 @@ memcpy(vncbuf,a,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
   {
     change=change+1;
     standby=0;
-    rfbProcessEvents(vncscr, 100000);
+    rfbProcessEvents(vncscr, 1000);
 //        __android_log_print(ANDROID_LOG_INFO,"VNC","change %d\tmin_x=%d max_x=%d min_y=%d max_y=%d xoff=%d yoff=%d\n",change,min_x,max_x,min_y,max_y,scrinfo.xoffset,scrinfo.yoffset);
   } 
 }

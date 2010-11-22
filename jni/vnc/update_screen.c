@@ -25,17 +25,21 @@ void FUNCTION(void)
   
   int max_x=-1,max_y=-1, min_x=9999, min_y=9999;
   idle=1;
-  
+ 
+   
+#if 1
   if (rotation==0)
-  {
+  { 
    //memcpy(vncbuf,fbmmap,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
 	for (j = 0; j < scrinfo.yres; j++)
 	{
 	  for (i = 0; i < scrinfo.xres; i++)
 	    {
-		if (a[i + j * scrinfo.xres]!=b[PIXEL_TO_VIRTUALPIXEL(i,j)])
+     	 int offset = j * scrinfo.xres;
+		 int pixelToVirtual = (j+scrinfo.yoffset)*scrinfo.xres_virtual+i+scrinfo.xoffset;
+		if (a[i + offset]!=b[pixelToVirtual])
 		{
-		  a[i + j * scrinfo.xres]=b[PIXEL_TO_VIRTUALPIXEL(i,j)];
+		  a[i + offset]=b[pixelToVirtual];
 
 		  if (i>max_x)
 		    max_x=i;
@@ -57,11 +61,13 @@ void FUNCTION(void)
   {
 	for (j = 0; j < scrinfo.yres; j++)
 	{
+	  int offset = i * scrinfo.yres;
+ int pixelToVirtual = (j+scrinfo.yoffset)*scrinfo.xres_virtual+i+scrinfo.xoffset;
 	  for (i = 0; i < scrinfo.xres; i++)
 		{
-		  if (a[(scrinfo.yres - 1 - j + i * scrinfo.yres)] != b[PIXEL_TO_VIRTUALPIXEL(i,j)])
+		  if (a[(scrinfo.yres - 1 - j + offset)] != b[pixelToVirtual])
 		   {
-		  a[(scrinfo.yres - 1 - j + i * scrinfo.yres)] = b[PIXEL_TO_VIRTUALPIXEL(i,j)];
+		  a[(scrinfo.yres - 1 - j + offset)] = b[pixelToVirtual];
 		  
 		  if (i>max_y)
 		    max_y=i;
@@ -85,11 +91,13 @@ void FUNCTION(void)
   {
         for (j = 0; j < scrinfo.yres; j++)
 	{
+		int offset = (scrinfo.yres - 1 - j) * scrinfo.xres;
+ int pixelToVirtual = (j+scrinfo.yoffset)*scrinfo.xres_virtual+i+scrinfo.xoffset;
 		for (i = 0; i < scrinfo.xres; i++)
 		{
-		  if (a[((scrinfo.xres - 1 - i) + (scrinfo.yres - 1 - j) * scrinfo.xres)]!=b[PIXEL_TO_VIRTUALPIXEL(i,j)])
+		  if (a[((scrinfo.xres - 1 - i) + offset )]!=b[pixelToVirtual])
 		  {
-		  a[((scrinfo.xres - 1 - i) + (scrinfo.yres - 1 - j) * scrinfo.xres)]=b[PIXEL_TO_VIRTUALPIXEL(i,j)];
+		  a[((scrinfo.xres - 1 - i) + offset )]=b[pixelToVirtual];
 		    
 		    
 		  if (i>max_x)
@@ -114,12 +122,13 @@ void FUNCTION(void)
   {
     	for (j = 0; j < scrinfo.yres; j++)
 	{
-	  
+	  int offset = (scrinfo.xres - 1 - i) * scrinfo.yres;
+ 		int pixelToVirtual = (j+scrinfo.yoffset)*scrinfo.xres_virtual+i+scrinfo.xoffset;
 		for (i = 0; i < scrinfo.xres; i++)
 		{
-		    if(a[j + (scrinfo.xres - 1 - i) * scrinfo.yres] != b[PIXEL_TO_VIRTUALPIXEL(i,j)])
+		    if(a[j + offset] != b[pixelToVirtual])
 		    {
-		      a[j + (scrinfo.xres - 1 - i) * scrinfo.yres] = b[PIXEL_TO_VIRTUALPIXEL(i,j)];
+		      a[j + offset] = b[pixelToVirtual];
 		       
 	          if (i>max_y)
 		    max_y=i;
@@ -140,6 +149,12 @@ void FUNCTION(void)
 }
   
 memcpy(vncbuf,a,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
+#else 
+memcpy(vncbuf,b,vncscr->width*vncscr->height*scrinfo.bits_per_pixel/CHAR_BIT);
+max_x = scrinfo.xres - 1;
+max_y = scrinfo.yres - 1;
+idle=0;
+#endif
 
   if (min_x!=9999 && min_y!=9999 && max_x!=-1 && max_y!=-1)
   {
