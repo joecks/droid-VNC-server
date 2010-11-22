@@ -40,7 +40,8 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/LibVNCServer-0.9.7/libvncserver \
 	$(LOCAL_PATH)/LibVNCServer-0.9.7 \
-	$(LOCAL_PATH)/../jpeg
+	$(LOCAL_PATH)/../jpeg \
+	$(LOCAL_PATH)/include
 
 
 LOCAL_STATIC_LIBRARIES := jpeg
